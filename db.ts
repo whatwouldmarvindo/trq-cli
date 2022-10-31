@@ -13,11 +13,15 @@ export class DB {
   async write(key: string, day: Day) {
     await this.ready;
     this.#db.set(key, day);
-    return this.#db.write()
+    return this.#db.write();
   }
 
   async getDay(key: string): Promise<Day | undefined> {
     await this.ready;
     return this.#db.get(key);
+  }
+
+  public deleteEverything(): Promise<void> {
+    return this.#db.deleteStore();
   }
 }

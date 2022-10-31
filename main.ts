@@ -1,5 +1,5 @@
 import { DB } from "./db.ts";
-import { bold, Command, inverse, Toggle, yellow } from "./deps.ts";
+import { bold, Command, Confirm, inverse, Toggle, yellow } from "./deps.ts";
 import { Day, Log, LogType } from "./data_structure.ts";
 
 const db = new DB();
@@ -22,10 +22,17 @@ const statusCommand = await new Command()
   .description("status for your current day")
   .action(onStatus);
 
+const resetCommand = await new Command()
+  .name("reset")
+  .version("0.0.1")
+  .description("Resets the database by deleting all values")
+  .action(onReset);
+
 new Command()
   .command("start", startCommand)
   .command("stop", stopCommand)
   .command("status", statusCommand)
+  .command("reset", resetCommand)
   .parse();
 
 async function onStatus() {
@@ -151,4 +158,13 @@ function formatTime(ms: number): string {
     minutes.toString().padStart(2, "0"),
     seconds.toString().padStart(2, "0"),
   ].join(":");
+}
+
+async function onReset() {
+  const message =
+    "Do you really want to delete all logs? \n All data will be lost forever";
+  const confirmed = await Confirm.prompt({ message: message });
+  if (confirmed) {
+    db.deleteEverything();
+  }
 }
