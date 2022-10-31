@@ -1,24 +1,23 @@
 import { DsDDB } from "./deps.ts";
-import { Command, LogEntry } from "./log_entry.ts";
+import { Day } from "./store_structure.ts";
 
-export type Log = {
-  type: Command;
-  time: string;
-};
+export class DB {
+  #db: DsDDB<Day>;
+  private readonly ready: Promise<boolean>;
 
-export class Store {
-  #db: DsDDB<Log>;
   constructor() {
     this.#db = new DsDDB();
-    this.#db.load();
+    this.ready = this.#db.load();
   }
 
-  async write(action: LogEntry) {
-    this.#db.set(action.key, action.value);
-    await this.#db.write();
+  async write(key: string, day: Day) {
+    await this.ready;
+    this.#db.set(key, day);
+    return this.#db.write()
   }
 
-  get(key: string): Log {
+  async getDay(key: string): Promise<Day | undefined> {
+    await this.ready;
     return this.#db.get(key);
   }
 }

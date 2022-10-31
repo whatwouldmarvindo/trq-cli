@@ -1,0 +1,2 @@
+Deno.test("start command", () => {
+});

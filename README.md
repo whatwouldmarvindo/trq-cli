@@ -1,6 +1,11 @@
 # TRQ-CLI
 
-Simple CLI for tracking time. Saving in timestamps in a simple json-based Database
+# start command for developing
+
+`deno run --watch --allow-read --allow-write main.ts start`
+
+Simple CLI for tracking time. Saving in timestamps in a simple json-based
+Database
 
 ## Future Ideas
 

@@ -1,35 +1,56 @@
-import { Log, Store } from "./store.ts";
+// export type LogType = "start" | "stop" | "pause";
 
-export type Command = "start" | "stop" | "pause";
+// export class Logs {
+//   date: Date;
+//   logType: LogType;
+//   public id: string;
 
-export class LogEntry {
-  isoDate: string;
-  command: Command;
-  dateString: string;
-  #store: Store;
+//   constructor(logType: LogType, date?: Date) {
+//     this.logType = logType;
+//     if (!date) {
+//       date = new Date();
+//     }
+//     this.date = date;
+//     this.id = this.generateId(date);
+//   }
 
-  constructor(command: Command, store: Store, date?: Date) {
-    this.command = command;
-    if (!date) {
-      date = new Date();
-    }
-    this.isoDate = date.toISOString();
-    this.dateString = date.toDateString();
-    this.#store = store;
-  }
+//   private generateId(date: Date) {
+//     const year = date.getFullYear();
+//     const month = date.getMonth();
+//     const day = date.getDay();
+//     return `${year}:${month}:${day}`;
+//   }
 
-  get key() {
-    return this.dateString + this.command;
-  }
+//   get value(): Log {
+//     return {
+//       time: this.date,
+//       type: this.logType,
+//     };
+//   }
+// }
 
-  persist() {
-    this.#store.write(this);
-  }
+// export class LogsDao implements Dao<Logs> {
+//   store: Store;
 
-  get value(): Log {
-    return {
-      time: this.isoDate,
-      type: this.command,
-    };
-  }
-}
+//   constructor(store: Store) {
+//     this.store = store;
+//   }
+
+//   get(id: string): Logs | null {
+//     return this.store.getLogs(id);
+//   }
+
+//   getAll(): Logs[] {
+//     return this.store
+//   }
+
+//   save(t: Logs): void {
+//     throw new Error("Method not implemented.");
+//   }
+//   update(t: Logs): void {
+//     throw new Error("Method not implemented.");
+//   }
+//   delete(t: Logs): void {
+//     throw new Error("Method not implemented.");
+//   }
+// }
