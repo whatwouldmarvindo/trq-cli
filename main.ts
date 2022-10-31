@@ -1,5 +1,5 @@
 import { DB } from "./db.ts";
-import { bold, Command, Confirm, HOUR, inverse, MINUTE, yellow } from "./deps.ts";
+import { bold, Command, inverse, Toggle, yellow } from "./deps.ts";
 import { Day, Log, LogType } from "./data_structure.ts";
 
 const db = new DB();
@@ -49,7 +49,7 @@ async function onStop() {
   const logType = LogType.stop;
   const { day, key } = await getDay();
   if (day.lastLogType === logType) {
-    return await handleInvalidLog(logType);
+    return await handleInvalidLogging(logType);
   }
   const log = createLog(logType);
   day.logs.push(log);
@@ -60,24 +60,36 @@ async function onStop() {
   db.write(key, day).then(() => console.log("saved Log", log));
 }
 
-async function handleInvalidLog(logType: LogType) {
+async function handleInvalidLogging(
+  logType: LogType,
+): Promise<void> {
   const message = yellow(
-    `The last logtype was also ${inverse(logType)}, something is not right`,
+    `The last log was also ${inverse(logType)}, something is not right`,
   );
   console.log(message);
 
-  const confirmed: boolean = await Confirm.prompt(
-    `Did you mean to add a ${inverse("start")} log?`,
+  const invertedLog = logType === LogType.start ? LogType.stop : LogType.stop;
+
+  const confirmed: boolean = await Toggle.prompt(
+    `Do you want to add a ${inverse(invertedLog)} log?`,
   );
   if (confirmed) {
-    onStart();
+    if (logType === LogType.start) {
+      onStop();
+    } else {
+      onStart();
+    }
+    return;
   }
   return;
 }
 
-export async function onStart() {
+export async function onStart(): Promise<void> {
   const logType = LogType.start;
   const { day, key } = await getDay();
+  if (day.lastLogType === logType) {
+    return await handleInvalidLogging(logType);
+  }
   const log: Log = createLog(logType);
 
   day.logs.push(log);
