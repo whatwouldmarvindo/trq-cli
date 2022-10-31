@@ -1,5 +1,5 @@
 import { DsDDB } from "./deps.ts";
-import { Day } from "./store_structure.ts";
+import { Day } from "./data_structure.ts";
 
 export class DB {
   #db: DsDDB<Day>;

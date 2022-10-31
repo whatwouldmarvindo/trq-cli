@@ -3,9 +3,13 @@ export type Log = {
   date: Date;
 };
 
-export type LogType = "start" | "stop";
+export enum LogType {
+  start = "start",
+  stop = "stop",
+}
 
 export type Day = {
   logs: Log[];
   timeInMilliseconds?: number;
+  lastLogType?: LogType
 };
