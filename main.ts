@@ -39,7 +39,7 @@ async function onStatus() {
   const key = getKey();
   const day = await db.getDay(key);
   if (!day || day.logs.length < 2) {
-    const error = yellow("We can't find a log entries for today :(");
+    const error = yellow("We can't find a log entry for today :(");
     return console.log(error);
   }
   getWorktime(day.logs);
@@ -55,7 +55,11 @@ function dateComparison(a: Date, b: Date) {
 async function onStop() {
   const logType = LogType.stop;
   const { day, key } = await getDay();
-  if (day.lastLogType === logType) {
+  const isSameLogAgain = day.lastLogType === logType;
+  const isFirstLogOfTheDay = day.lastLogType === undefined;
+  if (isFirstLogOfTheDay) {
+    return handleFirstLogError();
+  } else if (isSameLogAgain) {
     return await handleInvalidLogging(logType);
   }
   const log = createLog(logType);
@@ -67,9 +71,7 @@ async function onStop() {
   db.write(key, day).then(() => console.log("saved Log", log));
 }
 
-async function handleInvalidLogging(
-  logType: LogType,
-): Promise<void> {
+async function handleInvalidLogging(logType: LogType): Promise<void> {
   const message = yellow(
     `The last log was also ${inverse(logType)}, something is not right`,
   );
@@ -86,9 +88,7 @@ async function handleInvalidLogging(
     } else {
       onStart();
     }
-    return;
   }
-  return;
 }
 
 export async function onStart(): Promise<void> {
@@ -166,5 +166,15 @@ async function onReset() {
   const confirmed = await Confirm.prompt({ message: message });
   if (confirmed) {
     db.deleteEverything();
+  }
+}
+
+async function handleFirstLogError() {
+  const message = `You can't start the day with a ${inverse("stop")} log`;
+  console.log(message);
+  const toggleMessage = `Did you mean do ${inverse("start")} instead?`;
+  const startInstead = await Toggle.prompt({ message: toggleMessage });
+  if (startInstead) {
+    onStart();
   }
 }
