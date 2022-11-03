@@ -66,9 +66,12 @@ async function onStop() {
   day.logs.push(log);
   day.lastLogType = logType;
 
-  getWorktime(day.logs);
+  const worktime = getWorktime(day.logs);
 
-  db.write(key, day).then(() => console.log("saved Log", log));
+  const successMessage = `${
+    inverse("stop")
+  } saved!\nYou worked ${worktime} today!`;
+  await db.write(key, day).then(() => console.log(successMessage));
 }
 
 async function handleInvalidLogging(logType: LogType): Promise<void> {
@@ -102,7 +105,13 @@ export async function onStart(): Promise<void> {
   day.logs.push(log);
   day.lastLogType = logType;
 
-  db.write(key, day).then(() => console.log("Saved log", log));
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  const successMessage = `${inverse(logType)} saved at ${hours}:${minutes}`;
+
+  db.write(key, day).then(() => console.log(successMessage));
 }
 
 function createLog(logType: LogType): Log {
@@ -120,7 +129,7 @@ function getKey(date: Date = new Date()) {
   return date.toDateString();
 }
 
-function getWorktime(logs: Log[]) {
+function getWorktime(logs: Log[]): string {
   sortLogs(logs);
   let worktime = 0;
 
@@ -136,8 +145,7 @@ function getWorktime(logs: Log[]) {
     const differenceInMilliSeconds = stop.getTime() - start.getTime();
     worktime += differenceInMilliSeconds;
   }
-  const result = formatTime(worktime);
-  console.log(`You worked ${bold(result)} today! Good job 👍🏻`);
+  return formatTime(worktime);
 }
 
 function sortLogs(logs: Log[]) {
@@ -146,17 +154,15 @@ function sortLogs(logs: Log[]) {
 
 /**
  * @param ms
- * @returns string in the in the format h:m
+ * @returns string in format hh:mm
  */
 function formatTime(ms: number): string {
-  const seconds = Math.floor((ms / 1000) % 60);
   const minutes = Math.floor((ms / 1000 / 60) % 60);
   const hours = Math.floor((ms / 1000 / 60 / 60) % 24);
 
   return [
     hours.toString().padStart(2, "0"),
     minutes.toString().padStart(2, "0"),
-    seconds.toString().padStart(2, "0"),
   ].join(":");
 }
 
