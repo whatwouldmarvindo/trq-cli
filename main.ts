@@ -36,9 +36,9 @@ new Command()
   .parse();
 
 async function onStatus() {
-  const key = getKey();
-  const day = await db.getDay(key);
-  if (!day || day.logs.length < 2) {
+  const { day } = await getDay();
+
+  if (day.logs.length === 0) {
     const error = yellow("We can't find a log entry for today :(");
     return console.log(error);
   }

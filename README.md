@@ -9,9 +9,7 @@ Database
 
 ## Future Ideas
 
-- [ ] Start und Stopp command
-- [ ] Use of time
-- [ ] Pause command for breaks during worktime
+- [x] Start und Stopp command
 - [ ] Export in a minimal Database (csv?)
 - [ ] Generat simple weekly reporting
 - [ ] add times in resprospect
